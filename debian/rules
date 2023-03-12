@@ -1,0 +1,51 @@
+#!/usr/bin/make -f
+# You must remove unused comment lines for the released package.
+export DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+# Reduce debug info to workaround address space limitation
+ifneq (,$(filter $(DEB_HOST_ARCH), mipsel))
+    export DEB_CXXFLAGS_MAINT_APPEND += -g1
+endif
+
+BUILD_STATIC_DIR=$(CURDIR)/build-static/
+
+# -DCMAKE_BUILD_TYPE=Release
+COMMON_BUILD_FLAGS= \
+	-DgRPC_INSTALL_LIBDIR=lib/$(DEB_HOST_MULTIARCH) \
+	-DgRPC_INSTALL_CMAKEDIR=lib/$(DEB_HOST_MULTIARCH)/cmake/grpc \
+	-DgRPC_INSTALL_PKGCONFIGDIR=lib/$(DEB_HOST_MULTIARCH)/pkgconfig \
+	-DgRPC_BUILD_GRPC_CPP_PLUGIN=ON \
+	-DgRPC_BUILD_GRPC_CSHARP_PLUGIN=OFF \
+	-DgRPC_BUILD_GRPC_NODE_PLUGIN=OFF \
+	-DgRPC_BUILD_GRPC_OBJECTIVE_C_PLUGIN=OFF \
+	-DgRPC_BUILD_GRPC_PHP_PLUGIN=OFF \
+	-DgRPC_BUILD_GRPC_PYTHON_PLUGIN=OFF \
+	-DgRPC_BUILD_GRPC_RUBY_PLUGIN=OFF
+
+
+export V=1
+
+override_dh_auto_clean:
+	$(RM) -rf $(BUILD_STATIC_DIR)
+
+override_dh_auto_configure:
+	dh_auto_configure -O--buildsystem=cmake \
+		-O--builddir=$(BUILD_STATIC_DIR) -- \
+		-DBUILD_SHARED_LIBS=OFF \
+		-DgRPC_BUILD_TESTS=OFF \
+		$(COMMON_BUILD_FLAGS)
+
+override_dh_auto_build:
+	dh_auto_build -O--buildsystem=cmake \
+		-O--builddir=$(BUILD_STATIC_DIR)
+
+override_dh_auto_install:
+	dh_auto_install -O--buildsystem=cmake \
+		-O--builddir=$(BUILD_STATIC_DIR)
+
+%:
+	dh $@ --buildsystem=cmake
+
+.PHONY: overide_dh_auto_clean override_dh_auto_configure \
+	override_dh_auto_build override_dh_auto_install
+
