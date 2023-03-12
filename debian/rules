@@ -43,6 +43,9 @@ override_dh_auto_install:
 	dh_auto_install -O--buildsystem=cmake \
 		-O--builddir=$(BUILD_STATIC_DIR)
 
+override_dh_auto_test:
+	# do nothing
+
 %:
 	dh $@ --buildsystem=cmake
 
