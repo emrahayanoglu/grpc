@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
 
       - uses: emrahayanoglu/build-dpkg-buster@master
         id: build
