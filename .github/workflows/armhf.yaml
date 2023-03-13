@@ -10,6 +10,12 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: 'true'
+      
+      - name: Install AMD64 gRPC Library
+        run: |
+          wget https://github.com/emrahayanoglu/grpc/suites/11521239311/artifacts/596022617
+          unzip *.zip
+          dpkg -i *.deb
 
       - uses: emrahayanoglu/build-dpkg-buster@master
         id: build
