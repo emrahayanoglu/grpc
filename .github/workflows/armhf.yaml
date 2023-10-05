@@ -11,9 +11,14 @@ jobs:
         with:
           submodules: 'true'
       
-      - name: Install AMD64 gRPC Libraryfff
+      - name: Download artifact
+        id: download-artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          run_id: 6418501703
+
+      - name: Install grpc amd64
         run: |
-          wget https://github.com/emrahayanoglu/grpc/suites/11521239311/artifacts/596022617
           unzip *.zip
           dpkg -i *.deb
 
